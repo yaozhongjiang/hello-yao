@@ -1,0 +1,36 @@
+# interfaces(5) file used by ifup(8) and ifdown(8)
+auto lo
+iface lo inet loopback
+
+#auto eth0
+#iface eth0 inet static
+#	address 10.10.26.149
+#	netmask 255.255.255.0
+#	gateway 10.10.26.1
+
+### br1 使用静态公网 IP 地址，并以 ISP 的路由器作为网关
+auto br0
+iface br0 inet static
+        address 10.10.26.139
+        network 10.10.26.255
+        netmask 255.255.255.0
+        broadcast 10.10.26.255
+        gateway 10.10.26.1
+        bridge_ports eth0
+        bridge_stp off
+        bridge_fd 0
+        bridge_maxwait 0
+
+auto br1
+iface br1 inet static
+        address 192.168.1.1
+        netmask 255.255.255.0
+        broadcast 192.168.1.255
+        dns-nameservers 1.2.4.8
+        # set static route for LAN
+        post-up route add -net 192.168.1.0 netmask 255.255.255.0 gw 198.168.1.1
+        post-up route add -net 161.26.0.0 netmask 255.255.0.0 gw 192.168.1.1
+        bridge_ports eth1
+        bridge_stp off
+        bridge_fd 0
+        bridge_maxwait 0
